@@ -2,37 +2,53 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 import matplotlib.pyplot as plt
+from tkinter import Tk, Button, filedialog, messagebox
 import numpy as np
 
-image = Image.open('any_file_jpg')
 
-image.show()
-plt.imshow(image)
+def add_watermark():
+
+    file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.jpeg;*.png")])
+    if file_path:
+        image = Image.open(file_path)
 
 
-watermark_image = image.copy()
 
-draw = ImageDraw.Draw(watermark_image)
+        watermark_image = image.copy()
 
-w, h = image.size
+        draw = ImageDraw.Draw(watermark_image)
 
-x, y = int(w / 2), int(h / 2)
+        w, h = image.size
 
-if x > y:
-    font_size = y
-elif y > x:
-    font_size = x
-else:
-    font_size = x
+        x, y = int(w / 2), int(h / 2)
 
-font = ImageFont.truetype("arial.ttf", int(font_size / 6))
+        if x > y:
+            font_size = y
+        elif y > x:
+            font_size = x
+        else:
+            font_size = x
 
-draw.text((x+1, y-20), "some_text", fill=(0, ), font=font, anchor='ms')
-plt.subplot(1, 2, 1)
-plt.title('Watermarked')
-plt.imshow(watermark_image)
-draw.text((x, y), "some_text", fill=(255,), font=font, anchor='ms')
-plt.subplot(1, 2, 2)
-plt.title("white text")
-plt.imshow(watermark_image)
-plt.show()
+        font = ImageFont.truetype("arial.ttf", int(font_size / 4))
+
+        draw.text((x+1, y-20), "some_text", fill=(0, ), font=font, anchor='ms')
+        plt.subplot(1, 2, 1)
+        plt.title('Watermarked')
+        plt.imshow(watermark_image)
+        plt.show()
+        save_path = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG files", "*.png")])
+        if save_path:
+            watermark_image.save(save_path)
+            print("Watermark is successfully added")
+    else:
+        messagebox.showerror('path not selected!')
+
+
+main = Tk()
+
+main.title('Adding watermark')
+
+button = Button(text='Add watermark', command=add_watermark)
+button.pack()
+
+main.mainloop()
